@@ -1,0 +1,6 @@
+service:
+  port: ":9876"
+  secretJWT: "yoursecret"
+
+database:
+  dataSourceName: "<username>:<password>@tcp(<host>:<port>)/<dbname>?parseTime=true"
