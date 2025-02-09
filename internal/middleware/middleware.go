@@ -6,8 +6,9 @@ import (
 	"strings"
 
 	"github.com/amiulam/simple-forum/internal/configs"
-	"github.com/amiulam/simple-forum/pkg/jwt"
+	jwtUtils "github.com/amiulam/simple-forum/pkg/jwt"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -23,10 +24,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userID, username, err := jwt.ValidateToken(header, secretKey)
+		userID, username, err := jwtUtils.ValidateToken(header, secretKey)
 
 		if err != nil {
-			ctx.AbortWithError(http.StatusUnauthorized, err)
+			if errors.Is(err, jwt.ErrTokenExpired) {
+				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+					"error": "token expired",
+				})
+			}
 			return
 		}
 
@@ -49,7 +54,7 @@ func AuthMiddlewareForRefreshToken() gin.HandlerFunc {
 			return
 		}
 
-		userID, username, err := jwt.ValidateTokenWithoutExpiry(header, secretKey)
+		userID, username, err := jwtUtils.ValidateTokenWithoutExpiry(header, secretKey)
 
 		if err != nil {
 			ctx.AbortWithError(http.StatusUnauthorized, err)

@@ -11,6 +11,7 @@ import (
 	membershipSvc "github.com/amiulam/simple-forum/internal/services/memberships"
 	postSvc "github.com/amiulam/simple-forum/internal/services/posts"
 	"github.com/amiulam/simple-forum/pkg/internalsql"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -41,6 +42,7 @@ func main() {
 	}
 
 	// Middleware
+	r.Use(cors.Default())
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
