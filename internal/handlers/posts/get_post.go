@@ -11,6 +11,7 @@ import (
 func (h *Handler) GetPostByID(c *gin.Context) {
 	ctx := c.Request.Context()
 
+	userID := c.GetInt64("userID")
 	postID, err := strconv.ParseInt(c.Param("postID"), 10, 64)
 
 	if err != nil {
@@ -20,7 +21,7 @@ func (h *Handler) GetPostByID(c *gin.Context) {
 		return
 	}
 
-	response, err := h.postSvc.GetPostByID(ctx, postID)
+	response, err := h.postSvc.GetPostByID(ctx, postID, userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

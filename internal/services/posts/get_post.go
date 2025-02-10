@@ -7,8 +7,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (s *service) GetPostByID(ctx context.Context, postID int64) (*posts.GetPostResponse, error) {
-	postDetail, err := s.postRepo.GetPostByID(ctx, postID)
+func (s *service) GetPostByID(ctx context.Context, postID, userID int64) (*posts.GetPostResponse, error) {
+	postDetail, err := s.postRepo.GetPostByID(ctx, postID, userID)
 
 	if err != nil {
 		log.Error().Err(err).Msg("error get post by id")

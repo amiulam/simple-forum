@@ -3,6 +3,7 @@
 ### Authentication
 - `POST /memberships/sign-up` - Register new user
 - `POST /memberships/login` - User login
+- `POST /memberships/logout` - Logout user
 - `POST /memberships/refresh-token` - Refresh access token
 
 ### Posts

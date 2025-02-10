@@ -20,8 +20,8 @@ func (r *repository) CreatePost(ctx context.Context, model posts.PostModel) erro
 	return nil
 }
 
-func (r *repository) GetPostByID(ctx context.Context, postID int64) (*posts.Post, error) {
-	query := `SELECT p.id, p.user_id, u.username, p.post_title, p.post_content, p.post_hashtags, COALESCE(uv.is_liked, false) as is_liked FROM posts p JOIN users u ON u.id = p.user_id LEFT JOIN user_activities uv ON uv.post_id = p.id WHERE p.id = ?`
+func (r *repository) GetPostByID(ctx context.Context, postID, userID int64) (*posts.Post, error) {
+	query := `SELECT p.id, p.user_id, u.username, p.post_title, p.post_content, p.post_hashtags, COALESCE(uv.is_liked, false) as is_liked FROM posts p JOIN users u ON u.id = p.user_id LEFT JOIN user_activities uv ON uv.post_id = p.id AND uv.user_id = ? WHERE p.id = ?`
 
 	var (
 		model    posts.PostModel
@@ -29,7 +29,7 @@ func (r *repository) GetPostByID(ctx context.Context, postID int64) (*posts.Post
 		isLiked  bool
 	)
 
-	row := r.db.QueryRowContext(ctx, query, postID)
+	row := r.db.QueryRowContext(ctx, query, userID, postID)
 
 	err := row.Scan(&model.ID, &model.UserID, &username, &model.PostTitle, &model.PostContent, &model.PostHashtags, &isLiked)
 
@@ -90,10 +90,25 @@ func (r *repository) GetAllPost(ctx context.Context, userID int64, limit, offset
 		})
 	}
 
+	postCount := r.GetPostCount(ctx)
+
 	response.Data = data
 	response.Pagination = posts.Pagination{
 		Limit:  limit,
 		Offset: offset,
 	}
+	response.Count = postCount
 	return response, nil
+}
+
+func (r *repository) GetPostCount(ctx context.Context) int64 {
+	query := `SELECT COUNT(*) as count FROM posts`
+
+	var count int64
+
+	row := r.db.QueryRowContext(ctx, query)
+
+	row.Scan(&count)
+
+	return count
 }

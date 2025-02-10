@@ -9,7 +9,7 @@ import (
 
 type postRepository interface {
 	CreatePost(ctx context.Context, model posts.PostModel) error
-	GetPostByID(ctx context.Context, postID int64) (*posts.Post, error)
+	GetPostByID(ctx context.Context, postID, userID int64) (*posts.Post, error)
 	GetAllPost(ctx context.Context, userID int64, limit, offset int) (posts.GetAllPostResponse, error)
 
 	CreateComment(ctx context.Context, model posts.CommentModel) error

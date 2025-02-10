@@ -11,7 +11,7 @@ import (
 )
 
 func (s *service) UpsertUserActivity(ctx context.Context, postID, userID int64, req posts.UserActivityRequest) error {
-	existingPost, err := s.postRepo.GetPostByID(ctx, postID)
+	existingPost, err := s.postRepo.GetPostByID(ctx, postID, userID)
 
 	if err != nil {
 		return err

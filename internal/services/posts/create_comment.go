@@ -11,7 +11,7 @@ import (
 )
 
 func (s *service) CreateComment(ctx context.Context, userID, postID int64, req posts.CreateCommentRequest) error {
-	existingPost, err := s.postRepo.GetPostByID(ctx, postID)
+	existingPost, err := s.postRepo.GetPostByID(ctx, postID, userID)
 
 	if err != nil {
 		return err

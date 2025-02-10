@@ -24,6 +24,7 @@ type PostModel struct {
 
 type (
 	GetAllPostResponse struct {
+		Count      int64      `json:"count"`
 		Data       []Post     `json:"data"`
 		Pagination Pagination `json:"pagination"`
 	}

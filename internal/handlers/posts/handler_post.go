@@ -11,7 +11,7 @@ import (
 type postService interface {
 	CreatePost(ctx context.Context, userID int64, req posts.CreatePostRequest) error
 	GetAllPost(ctx context.Context, userID int64, pageSize, pageIndex int) (posts.GetAllPostResponse, error)
-	GetPostByID(ctx context.Context, postID int64) (*posts.GetPostResponse, error)
+	GetPostByID(ctx context.Context, postID, UserID int64) (*posts.GetPostResponse, error)
 
 	CreateComment(ctx context.Context, userID, postID int64, req posts.CreateCommentRequest) error
 
