@@ -7,11 +7,11 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (s *service) GetAllPost(ctx context.Context, pageSize, pageIndex int) (posts.GetAllPostResponse, error) {
+func (s *service) GetAllPost(ctx context.Context, userID int64, pageSize, pageIndex int) (posts.GetAllPostResponse, error) {
 	limit := pageSize
 	offset := limit * (pageIndex - 1)
 
-	response, err := s.postRepo.GetAllPost(ctx, limit, offset)
+	response, err := s.postRepo.GetAllPost(ctx, userID, limit, offset)
 
 	if err != nil {
 		log.Error().Err(err).Msg("error while retreiving all post")

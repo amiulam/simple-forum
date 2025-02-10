@@ -21,7 +21,7 @@ func (r *repository) CreatePost(ctx context.Context, model posts.PostModel) erro
 }
 
 func (r *repository) GetPostByID(ctx context.Context, postID int64) (*posts.Post, error) {
-	query := `SELECT p.id, p.user_id, u.username, p.post_title, p.post_content, p.post_hashtags, uv.is_liked FROM posts p JOIN users u ON u.id = p.user_id JOIN user_activities uv ON uv.post_id = p.id WHERE p.id = ?`
+	query := `SELECT p.id, p.user_id, u.username, p.post_title, p.post_content, p.post_hashtags, COALESCE(uv.is_liked, false) as is_liked FROM posts p JOIN users u ON u.id = p.user_id LEFT JOIN user_activities uv ON uv.post_id = p.id WHERE p.id = ?`
 
 	var (
 		model    posts.PostModel
@@ -51,12 +51,12 @@ func (r *repository) GetPostByID(ctx context.Context, postID int64) (*posts.Post
 	}, nil
 }
 
-func (r *repository) GetAllPost(ctx context.Context, limit, offset int) (posts.GetAllPostResponse, error) {
-	query := `SELECT p.id, p.user_id, u.username, p.post_title, p.post_content, p.post_hashtags from posts p JOIN users u ON u.id = p.user_id ORDER BY p.updated_at DESC LIMIT ? OFFSET ?`
+func (r *repository) GetAllPost(ctx context.Context, userID int64, limit, offset int) (posts.GetAllPostResponse, error) {
+	query := `SELECT p.id, p.user_id, u.username, p.post_title, p.post_content, p.post_hashtags, COALESCE(ua.is_liked, false) FROM posts p JOIN users u ON u.id = p.user_id LEFT JOIN user_activities ua ON ua.post_id = p.id AND ua.user_id = ? ORDER BY p.updated_at DESC LIMIT ? OFFSET ?`
 
 	response := posts.GetAllPostResponse{}
 
-	rows, err := r.db.QueryContext(ctx, query, limit, offset)
+	rows, err := r.db.QueryContext(ctx, query, userID, limit, offset)
 
 	if err != nil {
 		return response, err
@@ -70,9 +70,10 @@ func (r *repository) GetAllPost(ctx context.Context, limit, offset int) (posts.G
 		var (
 			model    posts.PostModel
 			username string
+			isLiked  bool
 		)
 
-		err = rows.Scan(&model.ID, &model.UserID, &username, &model.PostTitle, &model.PostContent, &model.PostHashtags)
+		err = rows.Scan(&model.ID, &model.UserID, &username, &model.PostTitle, &model.PostContent, &model.PostHashtags, &isLiked)
 
 		if err != nil {
 			return response, err
@@ -85,6 +86,7 @@ func (r *repository) GetAllPost(ctx context.Context, limit, offset int) (posts.G
 			PostTitle:    model.PostTitle,
 			PostContent:  model.PostContent,
 			PostHashtags: strings.Split(model.PostHashtags, ","),
+			IsLiked:      isLiked,
 		})
 	}
 

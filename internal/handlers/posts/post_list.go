@@ -19,6 +19,7 @@ func (h *Handler) GetAllPost(c *gin.Context) {
 		return
 	}
 
+	userID := c.GetInt64("userID")
 	pageIndex, err := strconv.Atoi(c.Query("pageIndex"))
 
 	if err != nil {
@@ -28,7 +29,7 @@ func (h *Handler) GetAllPost(c *gin.Context) {
 		return
 	}
 
-	response, err := h.postSvc.GetAllPost(ctx, pageSize, pageIndex)
+	response, err := h.postSvc.GetAllPost(ctx, userID, pageSize, pageIndex)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
