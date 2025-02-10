@@ -23,8 +23,6 @@ func (r *repository) InsertRefreshToken(ctx context.Context, model memberships.R
 func (r *repository) GetRefreshToken(ctx context.Context, userID int64, now time.Time) (*memberships.RefreshTokenModel, error) {
 	query := `SELECT * FROM refresh_tokens WHERE user_id = ? AND expired_at >= ?`
 
-	// id, user_id, refresh_token, expired_at, created_at, updated_at, created_by, updated_by
-
 	var response memberships.RefreshTokenModel
 
 	row := r.db.QueryRowContext(ctx, query, userID, now)
@@ -38,4 +36,15 @@ func (r *repository) GetRefreshToken(ctx context.Context, userID int64, now time
 	}
 
 	return &response, nil
+}
+
+func (r *repository) DeleteRefreshToken(ctx context.Context, userID int64) error {
+	query := `DELETE FROM refresh_tokens WHERE user_id = ?`
+
+	_, err := r.db.ExecContext(ctx, query, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -13,6 +13,7 @@ type membershipRepository interface {
 	CreateUser(ctx context.Context, model memberships.UserModel) error
 	InsertRefreshToken(ctx context.Context, model memberships.RefreshTokenModel) error
 	GetRefreshToken(ctx context.Context, userID int64, now time.Time) (*memberships.RefreshTokenModel, error)
+	DeleteRefreshToken(ctx context.Context, userID int64) error
 }
 
 type service struct {
